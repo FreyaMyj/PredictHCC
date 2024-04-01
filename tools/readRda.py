@@ -6,6 +6,7 @@ class ReadRda:
         self.rda_file = rda_file
         self.para = para
         self.csv_file = csv_file
+        self.read()
 
     def read(self):
         self.rda = rdata.read_rda(self.rda_file)
