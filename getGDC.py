@@ -4,7 +4,6 @@ This tool is to simplify the steps to download TCGA data.The tool has two main p
 -m is the manifest file path.
 -s is the location where the downloaded file is to be saved (it is best to create a new folder for the downloaded data).
 This tool supports breakpoint resuming. After the program is interrupted, it can be restarted,and the program will download file after the last downloaded file.
-Note that this download tool converts the file in the past folder format directly into a txt file. The file name is the UUID of the file in the original TCGA.
 If necessary, press ctrl+c to terminate the program.
 '''
 import os
@@ -38,9 +37,9 @@ def download(url, file_path):
 
 
 def get_UUID_list(manifest_path):
-    UUID_list = pd.read_table(manifest_path, sep='\t', encoding='utf-8')['id']
-    UUID_list = list(UUID_list)
-    return UUID_list
+    df = pd.read_table(manifest_path, sep='\t', encoding='utf-8')
+    UUID_filename_list = list(zip(df['id'], df['filename']))
+    return UUID_filename_list
 
 
 def get_last_UUID(file_path):
@@ -92,8 +91,8 @@ if __name__ == '__main__':
     print("Last download file {}".format(last_UUID))
     last_UUID_index = get_lastUUID_index(UUID_list, last_UUID)
 
-    for UUID in UUID_list[last_UUID_index:]:
+    for UUID, filename in UUID_list[last_UUID_index:]:
         url = os.path.join(link, UUID)
-        file_path = os.path.join(save_path, UUID + '.txt')
+        file_path = os.path.join(save_path, filename)  # Use the original filename
         download(url, file_path)
-        print(f'{UUID} have been downloaded')
+        print(f'{filename} have been downloaded')
